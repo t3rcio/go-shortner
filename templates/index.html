@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>go-shortener - API Documentation</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="text-center">URL Shortener - API Documentation</h1>
+    <p class="lead text-center">
+        This is a simple URL Shortener in Golang! 
+        This service allows you to shorten URLs and retrieve stored shortcuts. 
+        Below are the available endpoints:
+    </p>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>/new</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Type:</strong> POST</p>
+            <p>This endpoint allows you to add a new URL to be shortened. It returns the shortcut for the given URL.</p>
+            <p><strong>Request Body:</strong> The body of the request should be of type <code>x-www-form-urlencoded</code> and must include a key <code>"url"</code> with the destination URL as its value.</p>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>/list</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Type:</strong> GET</p>
+            <p>This endpoint returns a list of all registered shortcuts, allowing you to see all stored URLs.</p>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>/s/&lt;shortcut&gt;</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Type:</strong> GET</p>
+            <p>This endpoint redirects you to the URL registered under the specified shortcut.</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
