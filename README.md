@@ -1,6 +1,7 @@
 # go-shortner
 
-A simple Golang URL shortener
+A simple Golang URL shortener.
+
 You will need a Redis Server. To run it follow the instructions here:
 https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/docker/
 After that, run in a Terminal window:
