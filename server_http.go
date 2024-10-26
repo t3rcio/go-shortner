@@ -28,8 +28,10 @@ const REDIS_EXPIRATION_KEY_TIME = 0 // no expiration time
 const REDIS_KEY_LENGHT = 8
 const CHARSET = "abcdefghijklmnopqrstuvwxyz"
 
-var port = flag.String("port", WEB_SERVER_PORT, "Port listen to")
-var redis_server = flag.String("redisserver", REDIS_HOST, "Redis server")
+var (
+	port         string
+	redis_server string
+)
 
 func logger(msg string, level int, file string) {
 	/*
@@ -56,7 +58,8 @@ func GenerateARandonKey(lenght int) string {
 func getURLFromKey(conn *redis.Client, ctx *context.Context, path string) string {
 	value, err := conn.Get(*ctx, path).Result()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		value = ""
 	}
 	return value
 }
@@ -109,9 +112,12 @@ func loadHtmlFile(htmlFile string) string {
 }
 
 func main() {
+	flag.StringVar(&port, "port", WEB_SERVER_PORT, "Port listen to")
+	flag.StringVar(&redis_server, "redisserver", REDIS_HOST, "Redis server")
+	flag.Parse()
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     *redis_server + ":" + REDIS_PORT,
+		Addr:     redis_server + ":" + REDIS_PORT,
 		Password: "",
 		DB:       REDIS_DEFAULT_DB,
 	})
@@ -135,14 +141,19 @@ func main() {
 		if r.Method == "POST" {
 			err := r.ParseForm()
 			if err != nil {
-				panic("Error")
+				panic(err)
 			}
 			url := r.PostForm.Get("url")
-			_key := GenerateARandonKey(REDIS_KEY_LENGHT)
-			result := setRedisKey(rdb, &ctx, _key, url)
-			if result {
-				fmt.Fprint(w, _key)
+			if url != "" {
+				_key := GenerateARandonKey(REDIS_KEY_LENGHT)
+				result := setRedisKey(rdb, &ctx, _key, url)
+				if result {
+					fmt.Fprint(w, _key)
+					return
+				}
+				fmt.Fprint(w, "500")
 			}
+			fmt.Fprint(w, "404")
 		}
 	})
 
@@ -161,10 +172,13 @@ func main() {
 		logger("Links: "+strings.Join(links, ", "), LOG_INFO_LEVEL, STDOUT)
 		logger("URL from KEY: "+link+": "+_url, LOG_INFO_LEVEL, STDOUT)
 
-		http.Redirect(w, r, _url, http.StatusMovedPermanently)
+		if _url != "" {
+			http.Redirect(w, r, _url, http.StatusMovedPermanently)
+		}
+		fmt.Fprint(w, "404")
 	})
 
-	httpErr := http.ListenAndServe(":"+*port, nil)
+	httpErr := http.ListenAndServe(":"+port, nil)
 	if httpErr != nil {
 		fmt.Print(httpErr)
 	}
